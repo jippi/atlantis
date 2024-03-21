@@ -26,6 +26,7 @@ import (
 	"github.com/runatlantis/atlantis/server/core/runtime"
 	"github.com/runatlantis/atlantis/server/events/models"
 	"github.com/runatlantis/atlantis/server/logging"
+	"github.com/runatlantis/atlantis/server/utils"
 )
 
 const workingDirPrefix = "repos"
@@ -98,7 +99,8 @@ type FileWorkspace struct {
 func (w *FileWorkspace) Clone(
 	headRepo models.Repo,
 	p models.PullRequest,
-	workspace string) (string, bool, error) {
+	workspace string,
+) (string, bool, error) {
 	cloneDir := w.cloneDir(p.BaseRepo, p, workspace)
 	defer func() { w.CheckForUpstreamChanges = false }()
 
@@ -183,7 +185,6 @@ func (w *FileWorkspace) recheckDiverged(p models.PullRequest, headRepo models.Re
 		cmd.Dir = cloneDir
 
 		output, err := cmd.CombinedOutput()
-
 		if err != nil {
 			w.Logger.Warn("getting remote update failed: %s", string(output))
 			return false
@@ -237,7 +238,7 @@ func (w *FileWorkspace) forceClone(c wrappedGitContext) error {
 
 	// Create the directory and parents if necessary.
 	w.Logger.Info("creating dir %q", c.dir)
-	if err := os.MkdirAll(c.dir, 0700); err != nil {
+	if err := os.MkdirAll(c.dir, 0o700); err != nil {
 		return errors.Wrap(err, "creating new workspace")
 	}
 
@@ -424,7 +425,7 @@ func (w *FileWorkspace) SetCheckForUpstreamChanges() {
 func (w *FileWorkspace) DeletePlan(r models.Repo, p models.PullRequest, workspace string, projectPath string, projectName string) error {
 	planPath := filepath.Join(w.cloneDir(r, p, workspace), projectPath, runtime.GetPlanFilename(workspace, projectName))
 	w.Logger.Info("Deleting plan: " + planPath)
-	return os.Remove(planPath)
+	return utils.RemoveIgnoreNonExistent(planPath)
 }
 
 // getGitUntrackedFiles returns a list of Git untracked files in the working dir.
