@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+
 # what distro is the image being built for
 ARG ALPINE_TAG=3.19.1
 ARG DEBIAN_TAG=12.5-slim
@@ -159,7 +160,7 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 # Install packages needed to run Atlantis.
 # We place this last as it will bust less docker layer caches when packages update
 RUN apk add --no-cache \
-        ca-certificates~=20230506 \
+        ca-certificates~=2023 \
         curl~=8 \
         git~=2 \
         unzip~=6 \
