@@ -150,6 +150,25 @@ jobs:
         outputs: |
           type=image,name=target,annotation-index.org.opencontainers.image.description=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.description'] }}
 
+    - name: "Build and load into Docker"
+      if: contains(fromJson('["push", "pull_request"]'), github.event_name)
+      uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5
+      with:
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        context: .
+        build-args: |
+          ATLANTIS_BASE_TAG_TYPE=${{ matrix.image_type }}
+          ATLANTIS_VERSION=${{ env.RELEASE_VERSION }}
+          ATLANTIS_COMMIT=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+          ATLANTIS_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+        platforms: linux/arm64/v8,linux/amd64,linux/arm/v7
+        push: false
+        tags: ${{ steps.meta.outputs.tags }}
+        target: ${{ matrix.image_type }}
+        labels: ${{ steps.meta.outputs.labels }}
+        load: true
+
     - name: "setup Goss"
       if: ${{ env.PUSH == 'true' }}
       uses: e1himself/goss-installation-action@v1.2.1
@@ -157,7 +176,6 @@ jobs:
         version: "v0.4.6"
     - name: Execute Goss tests
       run: |
-        docker load --input ./myimage.tar
         dgoss run --rm ${{ steps.meta.outputs.tags }} bash -c 'while true; do sleep 1; done;'
 
   skip-build:
