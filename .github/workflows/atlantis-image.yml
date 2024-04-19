@@ -146,9 +146,9 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         target: ${{ matrix.image_type }}
         labels: ${{ steps.meta.outputs.labels }}
+        load: true
         outputs: |
           type=image,name=target,annotation-index.org.opencontainers.image.description=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.description'] }}
-          type=docker,dest=./myimage.tar
 
     - name: "setup Goss"
       if: ${{ env.PUSH == 'true' }}
