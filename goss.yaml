@@ -1,0 +1,29 @@
+# See: https://github.com/goss-org/goss/blob/master/docs/gossfile.md
+
+command:
+  # ensure terraform is available
+  terraform-available:
+    exec: "terraform version"
+    exit-status: 0
+    stdout: []
+    stderr: []
+
+  # ensure tofu binary is available
+  tofu-available:
+    exec: "tofu version"
+    exit-status: 0
+    stdout: []
+    stderr: []
+
+file:
+  # ensure the "tf" binary that contains versioned terraform
+  # binaries exists
+  /usr/local/bin/tf:
+    filetype: directory
+    exists: true
+
+  # ensure the "opentofu" binary that contains versioned tofu
+  # binaries exists
+  /usr/local/bin/opentofu:
+    filetype: directory
+    exists: true

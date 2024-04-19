@@ -148,6 +148,15 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.description'] }}
 
+    - name: "setup goss"
+      uses: e1himself/goss-installation-action@v1.2.1
+      with:
+        version: "v0.4.6"
+
+    - name: Execute Goss tests
+      run: |
+        dgoss run ${{ steps.meta.outputs.tags }}
+
   skip-build:
     needs: [changes]
     if: needs.changes.outputs.should-run-build == 'false'
