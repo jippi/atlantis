@@ -1,4 +1,4 @@
-package web_templates
+package templates
 
 import (
 	"io"

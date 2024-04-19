@@ -1,10 +1,8 @@
-import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics';
-import { docsearchPlugin } from '@vuepress/plugin-docsearch';
-import { getDirname, path } from '@vuepress/utils';
-import { defaultTheme } from '@vuepress/theme-default';
-import { defineUserConfig } from 'vuepress';
-import { sitemapPlugin } from '@vuepress/plugin-sitemap';
-import { webpackBundler } from '@vuepress/bundler-webpack';
+import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
+import { docsearchPlugin } from '@vuepress/plugin-docsearch'
+import { getDirname, path } from '@vuepress/utils'
+import { defaultTheme, defineUserConfig } from 'vuepress'
+import { sitemapPlugin } from 'vuepress-plugin-sitemap2';
 
 const __dirname = getDirname(import.meta.url)
 
@@ -12,7 +10,6 @@ export default defineUserConfig({
     alias: {
         '@theme/Home.vue': path.resolve(__dirname, './theme/components/Home.vue'),
     },
-    bundler: webpackBundler(),
     locales: {
         '/': {
             lang: 'en-US',
@@ -106,22 +103,22 @@ export default defineUserConfig({
         },
         sidebar: {
             '/guide/': [
-                '/guide/',
-                '/guide/test-drive',
-                '/guide/testing-locally',
+                '',
+                'test-drive',
+                'testing-locally',
             ],
             '/docs/': [
                 {
                     text: 'Installing Atlantis',
                     collapsible: true,
                     children: [
-                        '/docs/installation-guide',
-                        '/docs/requirements',
-                        '/docs/access-credentials',
-                        '/docs/webhook-secrets',
-                        '/docs/deployment',
-                        '/docs/configuring-webhooks',
-                        '/docs/provider-credentials',
+                        'installation-guide',
+                        'requirements',
+                        'access-credentials',
+                        'webhook-secrets',
+                        'deployment',
+                        'configuring-webhooks',
+                        'provider-credentials',
                     ]
                 },
                 {
@@ -130,23 +127,23 @@ export default defineUserConfig({
                     children: [
                         {
                             text: 'Overview',
-                            link: '/docs/configuring-atlantis',
+                            link: 'configuring-atlantis',
                         },
-                        '/docs/server-configuration',
-                        '/docs/server-side-repo-config',
-                        '/docs/pre-workflow-hooks',
-                        '/docs/post-workflow-hooks',
-                        '/docs/policy-checking',
-                        '/docs/custom-workflows',
-                        '/docs/repo-level-atlantis-yaml',
-                        '/docs/upgrading-atlantis-yaml',
-                        '/docs/command-requirements',
-                        '/docs/checkout-strategy',
-                        '/docs/terraform-versions',
-                        '/docs/terraform-cloud',
-                        '/docs/using-slack-hooks',
-                        '/docs/stats',
-                        '/docs/faq',
+                        'server-configuration',
+                        'server-side-repo-config',
+                        'pre-workflow-hooks',
+                        'post-workflow-hooks',
+                        'policy-checking',
+                        'custom-workflows',
+                        'repo-level-atlantis-yaml',
+                        'upgrading-atlantis-yaml',
+                        'command-requirements',
+                        'checkout-strategy',
+                        'terraform-versions',
+                        'terraform-cloud',
+                        'using-slack-hooks',
+                        'stats',
+                        'faq',
                     ]
                 },
                 {
@@ -155,9 +152,9 @@ export default defineUserConfig({
                     children: [
                         {
                             text: 'Overview',
-                            link: '/docs/using-atlantis',
+                            link: 'using-atlantis',
                         },
-                        '/docs/api-endpoints',
+                        'api-endpoints',
                     ]
                 },
                 {
@@ -166,26 +163,26 @@ export default defineUserConfig({
                     children: [
                         {
                             text: 'Overview',
-                            link: '/docs/how-atlantis-works',
+                            link: 'how-atlantis-works',
                         },
-                        '/docs/locking',
-                        '/docs/autoplanning',
-                        '/docs/automerging',
-                        '/docs/security',
+                        'locking',
+                        'autoplanning',
+                        'automerging',
+                        'security',
                     ]
                 },
                 {
                     text: 'Real-time Terraform Logs',
                     collapsible: true,
                     children: [
-                        '/docs/streaming-logs',
+                        'streaming-logs',
                     ]
                 },
                 {
                     text: 'Troubleshooting',
                     collapsible: true,
                     children: [
-                        '/docs/troubleshooting-https',
+                        'troubleshooting-https',
                     ]
                 }
             ]

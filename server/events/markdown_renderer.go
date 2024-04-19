@@ -72,7 +72,6 @@ type commonData struct {
 	EnableDiffMarkdownFormat  bool
 	ExecutableName            string
 	HideUnchangedPlanComments bool
-	VcsRequestType            string
 }
 
 // errData is data about an error response.
@@ -171,20 +170,13 @@ func NewMarkdownRenderer(
 
 // Render formats the data into a markdown string.
 // nolint: interfacer
-func (m *MarkdownRenderer) Render(ctx *command.Context, res command.Result, cmd PullCommand) string {
-	commandStr := cases.Title(language.English).String(strings.Replace(cmd.CommandName().String(), "_", " ", -1))
-	var vcsRequestType string
-	if ctx.Pull.BaseRepo.VCSHost.Type == models.Gitlab {
-		vcsRequestType = "Merge Request"
-	} else {
-		vcsRequestType = "Pull Request"
-	}
-
+func (m *MarkdownRenderer) Render(res command.Result, cmdName command.Name, subCmd, log string, verbose bool, vcsHost models.VCSHostType) string {
+	commandStr := cases.Title(language.English).String(strings.Replace(cmdName.String(), "_", " ", -1))
 	common := commonData{
 		Command:                   commandStr,
-		SubCommand:                cmd.SubCommandName(),
-		Verbose:                   cmd.IsVerbose(),
-		Log:                       ctx.Log.GetHistory(),
+		SubCommand:                subCmd,
+		Verbose:                   verbose,
+		Log:                       log,
 		PlansDeleted:              res.PlansDeleted,
 		DisableApplyAll:           m.disableApplyAll || m.disableApply,
 		DisableApply:              m.disableApply,
@@ -192,7 +184,6 @@ func (m *MarkdownRenderer) Render(ctx *command.Context, res command.Result, cmd 
 		EnableDiffMarkdownFormat:  m.enableDiffMarkdownFormat,
 		ExecutableName:            m.executableName,
 		HideUnchangedPlanComments: m.hideUnchangedPlanComments,
-		VcsRequestType:            vcsRequestType,
 	}
 
 	templates := m.markdownTemplates
@@ -203,12 +194,10 @@ func (m *MarkdownRenderer) Render(ctx *command.Context, res command.Result, cmd 
 	if res.Failure != "" {
 		return m.renderTemplateTrimSpace(templates.Lookup("failureWithLog"), failureData{res.Failure, "", common})
 	}
-	return m.renderProjectResults(ctx, res.ProjectResults, common)
+	return m.renderProjectResults(res.ProjectResults, common, vcsHost)
 }
 
-func (m *MarkdownRenderer) renderProjectResults(ctx *command.Context, results []command.ProjectResult, common commonData) string {
-	vcsHost := ctx.Pull.BaseRepo.VCSHost.Type
-
+func (m *MarkdownRenderer) renderProjectResults(results []command.ProjectResult, common commonData, vcsHost models.VCSHostType) string {
 	var resultsTmplData []projectResultTmplData
 	numPlanSuccesses := 0
 	numPolicyCheckSuccesses := 0

@@ -358,7 +358,6 @@ func TestGitlabClient_PullIsMergeable(t *testing.T) {
 	noHeadPipelineMR := 2
 	ciMustPassSuccessMR := 3
 	ciMustPassFailureMR := 4
-	needRebaseMR := 5
 
 	pipelineSuccess, err := os.ReadFile("testdata/gitlab-pipeline-success.json")
 	Ok(t, err)
@@ -367,9 +366,6 @@ func TestGitlabClient_PullIsMergeable(t *testing.T) {
 	Ok(t, err)
 
 	detailedMergeStatusCiMustPass, err := os.ReadFile("testdata/gitlab-detailed-merge-status-ci-must-pass.json")
-	Ok(t, err)
-
-	detailedMergeStatusNeedRebase, err := os.ReadFile("testdata/gitlab-detailed-merge-status-need-rebase.json")
 	Ok(t, err)
 
 	headPipelineNotAvailable, err := os.ReadFile("testdata/gitlab-head-pipeline-not-available.json")
@@ -430,13 +426,6 @@ func TestGitlabClient_PullIsMergeable(t *testing.T) {
 			gitlabServerVersions,
 			ciMustPassFailureMR,
 			false,
-		},
-		{
-			fmt.Sprintf("%s/apply", vcsStatusName),
-			models.FailedCommitStatus,
-			gitlabServerVersions,
-			needRebaseMR,
-			true,
 		},
 		{
 			fmt.Sprintf("%s/apply: resource/default", vcsStatusName),
@@ -502,9 +491,6 @@ func TestGitlabClient_PullIsMergeable(t *testing.T) {
 						case fmt.Sprintf("/api/v4/projects/runatlantis%%2Fatlantis/merge_requests/%v", ciMustPassFailureMR):
 							w.WriteHeader(http.StatusOK)
 							w.Write(detailedMergeStatusCiMustPass) // nolint: errcheck
-						case fmt.Sprintf("/api/v4/projects/runatlantis%%2Fatlantis/merge_requests/%v", needRebaseMR):
-							w.WriteHeader(http.StatusOK)
-							w.Write(detailedMergeStatusNeedRebase) // nolint: errcheck
 						case fmt.Sprintf("/api/v4/projects/%v", projectID):
 							w.WriteHeader(http.StatusOK)
 							w.Write(projectSuccess) // nolint: errcheck
