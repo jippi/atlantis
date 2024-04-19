@@ -54,7 +54,7 @@ jobs:
       # Set docker repo to either the fork or the main repo where the branch exists
       DOCKER_REPO: ghcr.io/${{ github.repository }}
       # Push if not a pull request and references the main branch
-      PUSH: true
+      PUSH: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
 
     steps:
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -146,15 +146,18 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         target: ${{ matrix.image_type }}
         labels: ${{ steps.meta.outputs.labels }}
-        outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.description'] }}
+        outputs: |
+          type=image,name=target,annotation-index.org.opencontainers.image.description=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.description'] }}
+          type=docker,name=${{ steps.meta.outputs.tags }},push=false
 
-    - name: "setup goss"
+    - name: "setup Goss"
+      if: ${{ env.PUSH == 'true' }}
       uses: e1himself/goss-installation-action@v1.2.1
       with:
         version: "v0.4.6"
     - name: Execute Goss tests
       run: |
-        dgoss run ${{ steps.meta.outputs.tags }}
+        dgoss run --rm ${{ steps.meta.outputs.tags }} bash -c 'while true; do sleep 1; done;'
 
   skip-build:
     needs: [changes]
