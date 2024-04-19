@@ -95,11 +95,7 @@ type FileWorkspace struct {
 // If the repo already exists and is at
 // the right commit it does nothing. This is to support running commands in
 // multiple dirs of the same repo without deleting existing plans.
-func (w *FileWorkspace) Clone(
-	headRepo models.Repo,
-	p models.PullRequest,
-	workspace string,
-) (string, bool, error) {
+func (w *FileWorkspace) Clone(logger logging.SimpleLogging, headRepo models.Repo, p models.PullRequest, workspace string) (string, bool, error) {
 	cloneDir := w.cloneDir(p.BaseRepo, p, workspace)
 	defer func() { w.CheckForUpstreamChanges = false }()
 
@@ -236,7 +232,7 @@ func (w *FileWorkspace) forceClone(logger logging.SimpleLogging, c wrappedGitCon
 	}
 
 	// Create the directory and parents if necessary.
-	w.Logger.Info("creating dir %q", c.dir)
+	logger.Info("creating dir '%s'", c.dir)
 	if err := os.MkdirAll(c.dir, 0o700); err != nil {
 		return errors.Wrap(err, "creating new workspace")
 	}
